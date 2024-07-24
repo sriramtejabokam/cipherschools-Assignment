@@ -1,0 +1,52 @@
+import java.util.HashSet;
+import java.util.Set;
+
+public class BoggleSolver {
+    private BoggleBoard board;
+    private Trie dictionary;
+    private Set<String> foundWords = new HashSet<>();
+    private boolean[][] visited;
+    private final int[] dRow = {-1, 0, 1, 0, -1, 1, -1, 1};
+    private final int[] dCol = {0, -1, 0, 1, -1, -1, 1, 1};
+
+    public BoggleSolver(BoggleBoard board, Trie dictionary) {
+        this.board = board;
+        this.dictionary = dictionary;
+        visited = new boolean[board.getBoard().length][board.getBoard()[0].length];
+    }
+
+    public Set<String> findWords() {
+        char[][] grid = board.getBoard();
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                dfs(i, j, "", grid);
+            }
+        }
+        return foundWords;
+    }
+
+    private void dfs(int row, int col, String prefix, char[][] grid) {
+        if (row < 0 || row >= grid.length || col < 0 || col >= grid[0].length || visited[row][col]) {
+            return;
+        }
+
+        prefix += grid[row][col];
+        if (!dictionary.search(prefix)) {
+            return;
+        }
+
+        if (prefix.length() > 2) {
+            foundWords.add(prefix);
+        }
+
+        visited[row][col] = true;
+
+        for (int i = 0; i < 8; i++) {
+            int newRow = row + dRow[i];
+            int newCol = col + dCol[i];
+            dfs(newRow, newCol, prefix, grid);
+        }
+
+        visited[row][col] = false;
+    }
+}
