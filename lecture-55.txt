@@ -1,0 +1,76 @@
+public class MaxHeap {
+    private int[] heap;
+    private int size;
+
+    public MaxHeap(int maxSize) {
+        heap = new int[maxSize + 1];
+        size = 0;
+    }
+
+    private int parent(int pos) {
+        return pos / 2;
+    }
+
+    private int leftChild(int pos) {
+        return 2 * pos;
+    }
+
+    private int rightChild(int pos) {
+        return (2 * pos) + 1;
+    }
+
+    private void swap(int fpos, int spos) {
+        int tmp = heap[fpos];
+        heap[fpos] = heap[spos];
+        heap[spos] = tmp;
+    }
+
+    private void maxHeapify(int pos) {
+        int largest = pos;
+        int left = leftChild(pos);
+        int right = rightChild(pos);
+
+        if (left <= size && heap[left] > heap[largest]) {
+            largest = left;
+        }
+
+        if (right <= size && heap[right] > heap[largest]) {
+            largest = right;
+        }
+
+        if (largest != pos) {
+            swap(pos, largest);
+            maxHeapify(largest);
+        }
+    }
+
+    public void insert(int element) {
+        heap[++size] = element;
+        int current = size;
+
+        while (current > 1 && heap[current] > heap[parent(current)]) {
+            swap(current, parent(current));
+            current = parent(current);
+        }
+    }
+
+    public int extractMax() {
+        int max = heap[1];
+        heap[1] = heap[size--];
+        maxHeapify(1);
+        return max;
+    }
+
+    public static void main(String[] arg) {
+        MaxHeap maxHeap = new MaxHeap(10);
+        maxHeap.insert(10);
+        maxHeap.insert(20);
+        maxHeap.insert(5);
+        maxHeap.insert(6);
+        maxHeap.insert(1);
+        maxHeap.insert(8);
+        maxHeap.insert(12);
+
+        System.out.println("Max value: " + maxHeap.extractMax());
+    }
+}
