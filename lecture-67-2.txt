@@ -1,0 +1,64 @@
+import java.util.HashSet;
+import java.util.Set;
+
+public class BoggleGame {
+    private static final int[] ROWS = {-1, 1, 0, 0, -1, 1, -1, 1};
+    private static final int[] COLS = {0, 0, -1, 1, -1, 1, 1, -1};
+
+    public static void main(String[] args) {
+        char[][] board = {
+            {'b', 'o', 'g', 'g'},
+            {'o', 'a', 't', 'e'},
+            {'t', 'b', 's', 'r'},
+            {'h', 'p', 'q', 'r'}
+        };
+
+        Set<String> dictionary = new HashSet<>();
+        dictionary.add("bog");
+        dictionary.add("boggle");
+        dictionary.add("go");
+        dictionary.add("bat");
+        dictionary.add("rat");
+
+        Trie trie = new Trie();
+        for (String word : dictionary) {
+            trie.insert(word);
+        }
+
+        Set<String> foundWords = new HashSet<>();
+        boolean[][] visited = new boolean[board.length][board[0].length];
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                backtrack(board, i, j, visited, "", trie, foundWords);
+            }
+        }
+
+        System.out.println("Found Words: " + foundWords);
+    }
+
+    private static void backtrack(char[][] board, int row, int col, boolean[][] visited, String currentWord, Trie trie, Set<String> foundWords) {
+        if (trie.search(currentWord)) {
+            foundWords.add(currentWord);
+        }
+
+        if (!trie.startsWith(currentWord)) {
+            return;
+        }
+
+        if (row < 0 || row >= board.length || col < 0 || col >= board[0].length || visited[row][col]) {
+            return;
+        }
+
+        visited[row][col] = true;
+        currentWord += board[row][col];
+
+        for (int i = 0; i < ROWS.length; i++) {
+            int newRow = row + ROWS[i];
+            int newCol = col + COLS[i];
+            backtrack(board, newRow, newCol, visited, currentWord, trie, foundWords);
+        }
+
+        visited[row][col] = false;
+    }
+}
