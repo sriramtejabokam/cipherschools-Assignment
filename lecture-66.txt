@@ -1,0 +1,57 @@
+import java.util.*;
+
+public class BoggleGame {
+    private static final int BOARD_SIZE = 4;
+    private static final char[][] BOARD = {
+        {'A', 'B', 'C', 'D'},
+        {'E', 'F', 'G', 'H'},
+        {'I', 'J', 'K', 'L'},
+        {'M', 'N', 'O', 'P'}
+    };
+    
+    private static Set<String> dictionary = new HashSet<>();
+    private static Set<String> foundWords = new HashSet<>();
+    
+    public static void main(String[] args) {
+        loadDictionary(Arrays.asList("ABCD", "EFG", "HIJ", "JKLM", "NOP", "ABCDEFGHIJKL", "BCDE"));
+        findWords();
+        System.out.println("Found Words: " + foundWords);
+    }
+    
+    private static void loadDictionary(List<String> words) {
+        dictionary.addAll(words);
+    }
+    
+    private static void findWords() {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                boolean[][] visited = new boolean[BOARD_SIZE][BOARD_SIZE];
+                searchWords(i, j, visited, "");
+            }
+        }
+    }
+    
+    private static void searchWords(int row, int col, boolean[][] visited, String prefix) {
+        if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE || visited[row][col]) {
+            return;
+        }
+        
+        prefix += BOARD[row][col];
+        
+        if (dictionary.contains(prefix)) {
+            foundWords.add(prefix);
+        }
+        
+        visited[row][col] = true;
+        
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i != 0 || j != 0) {
+                    searchWords(row + i, col + j, visited, prefix);
+                }
+            }
+        }
+        
+        visited[row][col] = false;
+    }
+}
